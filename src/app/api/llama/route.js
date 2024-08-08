@@ -1,7 +1,23 @@
 import { NextResponse } from "next/server";
 
+const systemPrompt = `
+You are an AI-powered customer support bot for an Ecommerce website. Your goal is to assist customers with their questions and concerns about items, deliveries, and any other issues they may have.
+
+Customer: [Customer's message]
+
+Bot: [Your response]
+
+Customer: [Customer's message]
+
+Bot: [Your response]
+
+...
+`;
+
 export async function POST(req) {
   try {
+    const chat = await req.json();
+    console.log("Received data:", chat);
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -12,7 +28,13 @@ export async function POST(req) {
         },
         body: JSON.stringify({
           model: "meta-llama/llama-3.1-8b-instruct:free",
-          messages: [{ role: "user", content: "What is the meaning of life?" }],
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            ...chat,
+          ],
         }),
       }
     );
