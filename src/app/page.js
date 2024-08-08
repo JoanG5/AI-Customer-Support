@@ -61,6 +61,27 @@ export default function Home() {
     }
   };
 
+  const test = async () => {
+    try {
+      const response = await fetch("/api/llama", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "meta-llama/llama-3.1-8b-instruct:free",
+          messages: [{ role: "user", content: "What is the meaning of life?" }],
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert(`Error: ${error.message}`);
+    }
+  };
+
   return (
     <div>
       <div>
@@ -72,6 +93,7 @@ export default function Home() {
       </div>
       <input onChange={(e) => setMessage(e.target.value)} value={message} />
       <Button onClick={sendMessage}>Send</Button>
+      <Button onClick={test}>Test</Button>
     </div>
   );
 }
