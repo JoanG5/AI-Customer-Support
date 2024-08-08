@@ -13,19 +13,20 @@ export default function Home() {
   const [message, setMessage] = useState("");
 
   const sendMessage = async () => {
+    const newMessage = { role: "user", content: message };
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", content: message },
-      { role: "assistant", content: "" },
+      newMessage,
+      { role: "assistant", content: "..." }, 
     ]);
 
     try {
-      const response = await fetch("/api/genAI", {
+      const response = await fetch("/api/llama", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([...messages, { role: "user", content: message }]),
+        body: JSON.stringify([...messages, newMessage]),
       });
 
       if (!response.ok) {
@@ -33,49 +34,17 @@ export default function Home() {
         throw new Error(error.error);
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let result = "";
-      const processText = async ({ done, value }) => {
-        if (done) {
-          return result;
-        }
-        const text = decoder.decode(value || new Int8Array(), { stream: true });
-        setMessages((prevMessages) => {
-          const lastMessage = prevMessages[prevMessages.length - 1];
-          const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },
-          ];
-        });
-        const next = await reader.read();
-        return processText(next);
-      };
+      const data = await response.json();
 
-      await reader.read().then(processText);
-      setMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error);
-      alert(`Error: ${error.message}`);
-    }
-  };
-
-  const test = async () => {
-    try {
-      const response = await fetch("/api/llama", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-3.1-8b-instruct:free",
-          messages: [{ role: "user", content: "What is the meaning of life?" }],
-        }),
+      setMessages((prevMessages) => {
+        const updatedMessages = prevMessages.slice(0, prevMessages.length - 1);
+        return [
+          ...updatedMessages,
+          { role: "assistant", content: data.choices[0].message.content },
+        ];
       });
 
-      const data = await response.json();
-      console.log(data);
+      setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
       alert(`Error: ${error.message}`);
@@ -93,7 +62,7 @@ export default function Home() {
       </div>
       <input onChange={(e) => setMessage(e.target.value)} value={message} />
       <Button onClick={sendMessage}>Send</Button>
-      <Button onClick={test}>Test</Button>
+      {/* <Button onClick={test}>Test</Button> */}
     </div>
   );
 }
