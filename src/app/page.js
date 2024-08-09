@@ -1,5 +1,6 @@
 "use client";
-import { Button } from "@mui/material";
+import { Box, Stack, TextField, Button} from "@mui/material"
+import {blue} from "@mui/material/colors"
 import { useState } from "react";
 import dotenv from "dotenv";
 
@@ -51,18 +52,64 @@ export default function Home() {
     }
   };
 
+  
+
   return (
-    <div>
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.role}:</strong> {msg.content}
-          </div>
-        ))}
-      </div>
-      <input onChange={(e) => setMessage(e.target.value)} value={message} />
-      <Button onClick={sendMessage}>Send</Button>
-      {/* <Button onClick={test}>Test</Button> */}
-    </div>
+    <Box
+      width="100vw"
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Stack
+        direction="column"
+        border="1px solid black"
+        p={2}
+        spacing={2}
+        width="100%"
+        maxHeight="100%"
+      >
+        <Stack
+          direction="column"
+          spacing={2}
+          flexGrow={1}
+          overflow="auto"
+          maxHeight="100%"
+        >
+          {messages.map((message, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent={message.role === "assistant" ? "flex-start" : "flex-end"}
+            >
+              <Box
+                bgcolor={message.role === "assistant" ? "primary.main" : "secondary.main"}
+                color="white"
+                borderRadius={16}
+                p={3}
+              >
+                {message.content}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
+        <Stack direction="row" spacing={2}>
+          <TextField
+            label="Message"
+            fullWidth
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+              }
+            }}
+          />
+          <Button variant="contained" onClick={sendMessage}>Send</Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 }
