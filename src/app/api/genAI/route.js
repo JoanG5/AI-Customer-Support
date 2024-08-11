@@ -12,7 +12,6 @@ Bot: [Your response]
 Customer: [Customer's message]
 
 Bot: [Your response]
-
 ...
 `;
 
@@ -65,52 +64,3 @@ export async function POST(req) {
     });
   }
 }
-
-  // const sendMessage = async () => {
-  //   setMessages((prevMessages) => [
-  //     ...prevMessages,
-  //     { role: "user", content: message },
-  //     { role: "assistant", content: "" },
-  //   ]);
-
-  //   try {
-  //     const response = await fetch("/api/llama", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify([...messages, { role: "user", content: message }]),
-  //     });
-
-  //     if (!response.ok) {
-  //       const error = await response.json();
-  //       throw new Error(error.error);
-  //     }
-
-  //     const reader = response.body.getReader();
-  //     const decoder = new TextDecoder();
-  //     let result = "";
-  //     const processText = async ({ done, value }) => {
-  //       if (done) {
-  //         return result;
-  //       }
-  //       const text = decoder.decode(value || new Int8Array(), { stream: true });
-  //       setMessages((prevMessages) => {
-  //         const lastMessage = prevMessages[prevMessages.length - 1];
-  //         const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
-  //         return [
-  //           ...otherMessages,
-  //           { ...lastMessage, content: lastMessage.content + text },
-  //         ];
-  //       });
-  //       const next = await reader.read();
-  //       return processText(next);
-  //     };
-
-  //     await reader.read().then(processText);
-  //     setMessage("");
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //     alert(`Error: ${error.message}`);
-  //   }
-  // };
