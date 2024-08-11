@@ -16,6 +16,8 @@ export default function Home() {
   ]);
   const [message, setMessage] = useState("");
   const theme = useTheme();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const sendMessage = async () => {
     const newMessage = { role: "user", content: message };
