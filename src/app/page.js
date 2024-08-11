@@ -1,9 +1,11 @@
 "use client";
-import {blue} from "@mui/material/colors"
+import { Box, Stack, TextField, Button, Typography, useTheme, Avatar } from "@mui/material";
+import { blue, grey, purple } from "@mui/material/colors";
 import { useState } from "react";
-import dotenv from "dotenv";
-import { Box, Stack, TextField, Button, Typography, CircularProgress } from '@mui/material';
-const darkOrange = '#FF9800';
+import SendIcon from "@mui/icons-material/Send";
+import PersonIcon from "@mui/icons-material/Person"; // User icon
+import SmartToyIcon from "@mui/icons-material/SmartToy"; // AI/Robot icon
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [messages, setMessages] = useState([
@@ -13,13 +15,14 @@ export default function Home() {
     },
   ]);
   const [message, setMessage] = useState("");
+  const theme = useTheme();
 
   const sendMessage = async () => {
     const newMessage = { role: "user", content: message };
     setMessages((prevMessages) => [
       ...prevMessages,
       newMessage,
-      { role: "assistant", content: "..." }, 
+      { role: "assistant", content: "..." },
     ]);
 
     try {
@@ -53,85 +56,206 @@ export default function Home() {
     }
   };
 
-  
-
   return (
     <Box
       width="100vw"
       height="100vh"
       display="flex"
       flexDirection="column"
-      justifyContent="center"
       alignItems="center"
-      sx={{
-        backgroundColor:   
- '#212121', // Set background to dark grey
-        color: 'white', // Set default text color to white
-      }}
+      bgcolor={grey[900]}
     >
-      <Stack
-        direction="column"
-        border="1px solid white" // White border
+      {/* Header Box at the Top of the Screen */}
+      <Box
+        width="100%"
+        bgcolor={blue[700]}
+        color="white"
         p={2}
-        spacing={2}
-        width="60%"
-        maxHeight="80%"
-        sx={{ borderRadius: '25px', backgroundColor: '#333333' }} // More rounded corners
+        textAlign="center"
+        boxShadow={3}
+        component={motion.div}
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        position="fixed"
+        top={0}
+        zIndex={1000}
+      >
+        <Typography variant="h5" fontWeight="bold">
+          AI Support Chat Box
+        </Typography>
+      </Box>
+
+      {/* Spacing to Account for Fixed Header */}
+      <Box height="64px" />
+
+      {/* Centered Chat Interface */}
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexGrow={1}
+        width="100%"
       >
         <Stack
+          component={motion.div}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
           direction="column"
+          border={`2px solid ${theme.palette.divider}`}
+          borderRadius={4}
+          p={2}
           spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
-          sx={{ '&::-webkit-scrollbar': { width: '5px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: darkOrange } }} // Custom scrollbar styling
+          width="95%"
+          maxWidth="800px"
+          height="80%"
+          maxHeight="80%"
+          bgcolor={grey[800]}
+          boxShadow={5}
+          mt={2}
+          sx={{
+            backdropFilter: "blur(10px)",
+            background: `linear-gradient(145deg, ${grey[800]}, ${purple[900]})`,
+            borderRadius: "20px",
+          }}
         >
-          {messages.map((msg, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={msg.role === 'assistant' ? 'flex-start' : 'flex-end'}
-            >
+          <Stack
+            direction="column"
+            spacing={2}
+            flexGrow={1}
+            overflow="auto"
+            maxHeight="100%"
+            component={motion.div}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            {messages.map((message, index) => (
               <Box
-                bgcolor={msg.role === 'assistant' ? 'primary.main' : 'secondary.main'}
-                color="white"
-                borderRadius={16}
-                p={3}
-                sx={{ backgroundColor: msg.role === 'assistant' ? darkOrange : '#424242' }} // Message bubble color based on role
+                key={index}
+                display="flex"
+                justifyContent={
+                  message.role === "assistant" ? "flex-start" : "flex-end"
+                }
+                alignItems="center"
+                component={motion.div}
+                initial={{ opacity: 0.5 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                <Typography variant="body1">{msg.content}</Typography>
+                {/* AI (Assistant) Message Layout */}
+                {message.role === "assistant" && (
+                  <>
+                    <Avatar
+                      sx={{
+                        bgcolor: blue[700],
+                        marginRight: 1,
+                      }}
+                    >
+                      <SmartToyIcon />
+                    </Avatar>
+                    <Box
+                      bgcolor={blue[700]}
+                      color="white"
+                      borderRadius={16}
+                      p={2}
+                      boxShadow={2}
+                      component={motion.div}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      sx={{
+                        background: `linear-gradient(145deg, ${blue[600]}, ${purple[600]})`,
+                      }}
+                    >
+                      {message.content}
+                    </Box>
+                  </>
+                )}
+
+                {/* User Message Layout */}
+                {message.role === "user" && (
+                  <>
+                    <Box
+                      bgcolor={theme.palette.secondary.main}
+                      color="white"
+                      borderRadius={16}
+                      p={2}
+                      boxShadow={2}
+                      component={motion.div}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      sx={{
+                        background: `linear-gradient(145deg, ${blue[600]}, ${purple[600]})`,
+                      }}
+                    >
+                      {message.content}
+                    </Box>
+                    <Avatar
+                      sx={{
+                        bgcolor: grey[500],
+                        marginLeft: 1,
+                      }}
+                    >
+                      <PersonIcon />
+                    </Avatar>
+                  </>
+                )}
               </Box>
-            </Box>
-          ))}
-          {isLoading && <CircularProgress sx={{ color: darkOrange }} />}
-          {error && <div style={{ color: 'red' }}>Error: {error}</div>}
+            ))}
+          </Stack>
+
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Type your message..."
+              variant="outlined"
+              fullWidth
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              sx={{
+                bgcolor: grey[700],
+                borderRadius: 2,
+                input: { color: "white" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: grey[500],
+                  },
+                  "&:hover fieldset": {
+                    borderColor: blue[400],
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: blue[600],
+                  },
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={sendMessage}
+              endIcon={<SendIcon />}
+              sx={{
+                boxShadow: 3,
+                bgcolor: blue[600],
+                "&:hover": {
+                  bgcolor: blue[700],
+                },
+              }}
+              component={motion.div}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Send
+            </Button>
+          </Stack>
         </Stack>
-        <Stack direction="row" spacing={2}>
-          <TextField
-            label="Message"
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                sendMessage();
-              }
-            }}
-            sx={{
-              backgroundColor: '#212121', // Match background color
-              color: 'white', // Set text color to white
-              borderRadius: '25px', // Rounder message box
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '25px' } // White border, rounded corners
-              },
-              '& .MuiOutlinedInput-input': { // Set text color to white
-                color: 'white'
-              }
-            }}
-          />
-          <Button variant="contained" onClick={sendMessage} sx={{ backgroundColor: darkOrange, borderRadius: '25px', '&:hover': { backgroundColor: '#FFA740' } }}>Send</Button>
-        </Stack>
-      </Stack>
+      </Box>
     </Box>
   );
 }
+
+
